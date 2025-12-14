@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neema Christian School Results</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            padding: 30px;
+            background: #f8f9fa;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+        
+        .stat-card h3 {
+            color: #555;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+        
+        .stat-card .value {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #2a5298;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .section {
+            margin-bottom: 40px;
+        }
+        
+        .section h2 {
+            color: #2a5298;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+        
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+        }
+        
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        tr:hover {
+            background: #f5f5f5;
+        }
+        
+        .rank-badge {
+            display: inline-block;
+            width: 35px;
+            height: 35px;
+            line-height: 35px;
+            border-radius: 50%;
+            background: #667eea;
+            color: white;
+            font-weight: bold;
+            text-align: center;
+        }
+        
+        .rank-badge.gold {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+        }
+        
+        .rank-badge.silver {
+            background: linear-gradient(135deg, #C0C0C0, #A8A8A8);
+        }
+        
+        .rank-badge.bronze {
+            background: linear-gradient(135deg, #CD7F32, #B87333);
+        }
+        
+        .grade-distribution {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .grade-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            border: 2px solid #e0e0e0;
+        }
+        
+        .grade-item .grade {
+            font-weight: bold;
+            color: #2a5298;
+            font-size: 1.2em;
+        }
+        
+        .grade-item .count {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+            margin: 10px 0;
+        }
+        
+        .grade-item .label {
+            font-size: 0.8em;
+            color: #666;
+        }
+        
+        .gender-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-weight: bold;
+        }
+        
+        .gender-badge.male {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+        
+        .gender-badge.female {
+            background: #fce4ec;
+            color: #c2185b;
+        }
+        
+        .mean-score {
+            font-weight: bold;
+            font-size: 1.1em;
+            color: #2a5298;
+        }
+        
+        .chart-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+        
+        .bar {
+            height: 30px;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            border-radius: 5px;
+            margin: 10px 0;
+            position: relative;
+            transition: width 0.5s ease;
+        }
+        
+        .bar-label {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: white;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+        
+        .bar-value {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: white;
+            font-weight: bold;
+        }
+        
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            
+            .container {
+                box-shadow: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎓 NEEMA CHRISTIAN SCHOOL</h1>
+            <p>2025 KJSEA Results Analysis</p>
+            <p style="font-size: 0.9em; margin-top: 5px;">Friday, 12 December 2025 | Centre Code: 26578095</p>
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Total Candidates</h3>
+                <div class="value">14</div>
+            </div>
+            <div class="stat-card">
+                <h3>Pass Rate</h3>
+                <div class="value">100%</div>
+            </div>
+            <div class="stat-card">
+                <h3>School Mean</h3>
+                <div class="value">32.66</div>
+            </div>
+            <div class="stat-card">
+                <h3>Top Score</h3>
+                <div class="value">49.81</div>
+            </div>
+        </div>
+        
+        <div class="content">
+            <div class="section">
+                <h2>📊 Grade Distribution</h2>
+                <div class="grade-distribution">
+                    <div class="grade-item">
+                        <div class="grade">EE1</div>
+                        <div class="count">1</div>
+                        <div class="label">Exceeding</div>
+                    </div>
+                    <div class="grade-item">
+                        <div class="grade">EE2</div>
+                        <div class="count">23</div>
+                        <div class="label">Exceeding</div>
+                    </div>
+                    <div class="grade-item">
+                        <div class="grade">ME1</div>
+                        <div class="count">36</div>
+                        <div class="label">Meeting</div>
+                    </div>
+                    <div class="grade-item">
+                        <div class="grade">ME2</div>
+                        <div class="count">48</div>
+                        <div class="label">Meeting</div>
+                    </div>
+                    <div class="grade-item">
+                        <div class="grade">AE1</div>
+                        <div class="count">12</div>
+                        <div class="label">Approaching</div>
+                    </div>
+                    <div class="grade-item">
+                        <div class="grade">AE2</div>
+                        <div class="count">8</div>
+                        <div class="label">Approaching</div>
+                    </div>
+                    <div class="grade-item">
+                        <div class="grade">BE1</div>
+                        <div class="count">1</div>
+                        <div class="label">Below</div>
+                    </div>
+                    <div class="grade-item">
+                        <div class="grade">BE2</div>
+                        <div class="count">0</div>
+                        <div class="label">Below</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2>🏆 Student Rankings</h2>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Student Name</th>
+                                <th>Gender</th>
+                                <th>Assessment Number</th>
+                                <th>Mean Score</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="rank-badge gold">1</span></td>
+                                <td>Cynthia Jepchirchir</td>
+                                <td><span class="gender-badge female">F</span></td>
+                                <td>A001351571</td>
+                                <td><span class="mean-score">49.81</span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="rank-badge silver">2</span></td>
+                                <td>Duncan Kibiwot</td>
+                                <td><span class="gender-badge male">M</span></td>
+                                <td>A001381518</td>
+                                <td><span class="mean-score">45.88</span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="rank-badge bronze">3</span></td>
+                                <td>Reinhard Vulimo</td>
+                                <td><span class="gender-badge male">M</span></td>
+                                <td>A000021326</td>
+                                <td><span class="mean-score">44.04</span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="rank-badge">4</span></td>
+                                <td>Derick Charles</td>
+                                <td><span class="gender-badge male">M</span></td>
+                                <td>A002594089</td>
+                                <td><span class="mean-score">41.49</span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="rank-badge">5</span></td>
+                                <td>Stephen Macharia</td>
+                                <td><span class="gender-badge male">M</span></td>
+                                <td>A001314889</td>
+                                <td><span class="mean-score">39.61</span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="rank-badge">6</span></td>
+                                <td>Immanuel Kipkemboi Mutai</td>
+                                <td><span class="gender-badge male">M</span></td>
+                                <td>A000335978</td>
+                                <td><span class="mean-score">37.74</span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="rank-badge">7</span></td>
+                                <td>Prinnce Felix Kiplagat</td>
+                                <td><span class="gender-badge male">M</span></td>
+                                <td>A000535191</td>
+                                <td><span class="mean-score">33.95</span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="rank-badge">8</span></td>
+                                <td>Cyrus Chelang'a Cheboi</td>
+                                <td><span class="gender-badge male">M</span></td>
+                                <td>A000681230</td>
+                                <td><span class="mean-score">33.41</span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="rank-badge">9</span></td>
+                                <td>Abigael Muhonja Anzungira</td>
+                                <td><span class="gender-badge female">F</span></td>
+                                <td>A000265016</td>
+                                <td><span class="mean-score">29.39</span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="rank-badge">10</span></td>
+                                <td>Isaac Misigo</td>
+                                <td><span class="gender-badge male">M</span></td>
+                                <td>A000618020</td>
+                                <td><span class="mean-score">27.01</span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="rank-badge">11</span></td>
+                                <td>Michael Mwei</td>
+                                <td><span class="gender-badge male">M</span></td>
+                                <td>A000188099</td>
+                                <td><span class="mean-score">26.78</span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="rank-badge">12</span></td>
+                                <td>Cornelius Misigo Kirivwa</td>
+                                <td><span class="gender-badge male">M</span></td>
+                                <td>A000153558</td>
+                                <td><span class="mean-score">21.71</span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="rank-badge">13</span></td>
+                                <td>Livondo Khalayi Naserian</td>
+                                <td><span class="gender-badge female">F</span></td>
+                                <td>B001645822</td>
+                                <td><span class="mean-score">19.66</span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="rank-badge">14</span></td>
+                                <td>Gracy Wamalwa</td>
+                                <td><span class="gender-badge female">F</span></td>
+                                <td>A000596693</td>
+                                <td><span class="mean-score">10.75</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2>📈 Performance Visualization</h2>
+                <div class="chart-container">
+                    <div style="margin-bottom: 10px;">
+                        <div class="bar" style="width: 100%;">
+                            <span class="bar-label">Cynthia Jepchirchir</span>
+                            <span class="bar-value">49.81</span>
+                        </div>
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <div class="bar" style="width: 92%;">
+                            <span class="bar-label">Duncan Kibiwot</span>
+                            <span class="bar-value">45.88</span>
+                        </div>
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <div class="bar" style="width: 88%;">
+                            <span class="bar-label">Reinhard Vulimo</span>
+                            <span class="bar-value">44.04</span>
+                        </div>
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <div class="bar" style="width: 83%;">
+                            <span class="bar-label">Derick Charles</span>
+                            <span class="bar-value">41.49</span>
+                        </div>
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <div class="bar" style="width: 79%;">
+                            <span class="bar-label">Stephen Macharia</span>
+                            <span class="bar-value">39.61</span>
+                        </div>
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <div class="bar" style="width: 76%;">
+                            <span class="bar-label">Immanuel Kipkemboi Mutai</span>
+                            <span class="bar-value">37.74</span>
+                        </div>
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <div class="bar" style="width: 68%;">
+                            <span class="bar-label">Prinnce Felix Kiplagat</span>
+                            <span class="bar-value">33.95</span>
+                        </div>
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <div class="bar" style="width: 67%;">
+                            <span class="bar-label">Cyrus Chelang'a Cheboi</span>
+                            <span class="bar-value">33.41</span>
+                        </div>
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <div class="bar" style="width: 59%;">
+                            <span class="bar-label">Abigael Muhonja Anzungira</span>
+                            <span class="bar-value">29.39</span>
+                        </div>
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <div class="bar" style="width: 54%;">
+                            <span class="bar-label">Isaac Misigo</span>
+                            <span class="bar-value">27.01</span>
+                        </div>
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <div class="bar" style="width: 54%;">
+                            <span class="bar-label">Michael Mwei</span>
+                            <span class="bar-value">26.78</span>
+                        </div>
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <div class="bar" style="width: 44%;">
+                            <span class="bar-label">Cornelius Misigo Kirivwa</span>
+                            <span class="bar-value">21.71</span>
+                        </div>
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <div class="bar" style="width: 39%;">
+                            <span class="bar-label">Livondo Khalayi Naserian</span>
+                            <span class="bar-value">19.66</span>
+                        </div>
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <div class="bar" style="width: 22%;">
+                            <span class="bar-label">Gracy Wamalwa</span>
+                            <span class="bar-value">10.75</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
