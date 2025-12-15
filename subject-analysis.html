@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subject Performance Analysis</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.8em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .section {
+            margin-bottom: 50px;
+        }
+        
+        .section-title {
+            font-size: 2em;
+            color: #2a5298;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 4px solid #667eea;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .ranking-grid {
+            display: grid;
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .subject-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            transition: all 0.3s ease;
+            border-left: 6px solid #667eea;
+        }
+        
+        .subject-card:hover {
+            transform: translateX(10px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        }
+        
+        .subject-card.rank-1 {
+            border-left-color: #FFD700;
+            background: linear-gradient(135deg, #fff9e6 0%, #ffffff 100%);
+        }
+        
+        .subject-card.rank-2 {
+            border-left-color: #C0C0C0;
+            background: linear-gradient(135deg, #f5f5f5 0%, #ffffff 100%);
+        }
+        
+        .subject-card.rank-3 {
+            border-left-color: #CD7F32;
+            background: linear-gradient(135deg, #fff0e6 0%, #ffffff 100%);
+        }
+        
+        .subject-card.needs-attention {
+            border-left-color: #ff6b6b;
+            background: linear-gradient(135deg, #ffe6e6 0%, #ffffff 100%);
+        }
+        
+        .rank-badge {
+            font-size: 3em;
+            font-weight: bold;
+            min-width: 80px;
+            text-align: center;
+        }
+        
+        .rank-badge.gold {
+            color: #FFD700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .rank-badge.silver {
+            color: #C0C0C0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .rank-badge.bronze {
+            color: #CD7F32;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .subject-info {
+            flex: 1;
+        }
+        
+        .subject-name {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #2a5298;
+            margin-bottom: 8px;
+        }
+        
+        .subject-stats {
+            display: flex;
+            gap: 30px;
+            font-size: 0.95em;
+            color: #666;
+        }
+        
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .stat-label {
+            font-size: 0.85em;
+            color: #999;
+            text-transform: uppercase;
+        }
+        
+        .stat-value {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .performance-bar {
+            width: 100%;
+            height: 12px;
+            background: #e0e0e0;
+            border-radius: 6px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+        
+        .performance-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            border-radius: 6px;
+            transition: width 1s ease;
+        }
+        
+        .chart-section {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 12px;
+            margin-top: 30px;
+        }
+        
+        .bar-chart {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .chart-bar {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .chart-label {
+            min-width: 250px;
+            font-weight: 600;
+            color: #333;
+            font-size: 1.05em;
+        }
+        
+        .chart-bar-container {
+            flex: 1;
+            height: 40px;
+            background: #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .chart-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 15px;
+            color: white;
+            font-weight: bold;
+            transition: width 1.5s ease;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        
+        .status-excellent {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-good {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+        
+        .status-fair {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-attention {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .insights-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+        
+        .insight-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-top: 4px solid #667eea;
+        }
+        
+        .insight-card h3 {
+            color: #2a5298;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        
+        .insight-card ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .insight-card li {
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f0;
+            color: #555;
+        }
+        
+        .insight-card li:last-child {
+            border-bottom: none;
+        }
+        
+        .medal {
+            font-size: 2em;
+            margin-right: 10px;
+        }
+        
+        @media (max-width: 768px) {
+            .chart-label {
+                min-width: 150px;
+                font-size: 0.9em;
+            }
+            
+            .subject-stats {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 SUBJECT PERFORMANCE ANALYSIS</h1>
+            <p>Neema Christian School - 2025 KJSEA Results</p>
+            <p style="font-size: 0.95em; margin-top: 10px; opacity: 0.85;">Complete Ranking from Best to Lowest Performing Subjects</p>
+        </div>
+        
+        <div class="content">
+            <div style="text-align: center; padding: 20px 0;">
+                <a href="index.html" style="display: inline-block; padding: 15px 30px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 1.1em; transition: transform 0.3s ease;">
+                    👥 View Student Rankings
+                </a>
+            </div>
+            
+            <!-- Subject Rankings -->
+            <div class="section">
+                <div class="section-title">
+                    🏆 Subject Rankings
+                </div>
+                
+                <div class="ranking-grid">
+                    <!-- Rank 1 -->
+                    <div class="subject-card rank-1">
+                        <div class="rank-badge gold">🥇</div>
+                        <div class="subject-info">
+                            <div class="subject-name">1st Place: AGRICULTURE</div>
+                            <div class="subject-stats">
+                                <div class="stat-item">
+                                    <span class="stat-label">Total Points</span>
+                                    <span class="stat-value">87</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Average</span>
+                                    <span class="stat-value">6.21</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Status</span>
+                                    <span class="status-badge status-excellent">EXCELLENT</span>
+                                </div>
+                            </div>
+                            <div class="performance-bar">
+                                <div class="performance-fill" style="width: 100%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Rank 2 -->
+                    <div class="subject-card rank-2">
+                        <div class="rank-badge silver">🥈</div>
+                        <div class="subject-info">
+                            <div class="subject-name">2nd Place: INTEGRATED SCIENCE</div>
+                            <div class="subject-stats">
+                                <div class="stat-item">
+                                    <span class="stat-label">Total Points</span>
+                                    <span class="stat-value">86</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Average</span>
+                                    <span class="stat-value">6.14</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Status</span>
+                                    <span class="status-badge status-excellent">EXCELLENT</span>
+                                </div>
+                            </div>
+                            <div class="performance-bar">
+                                <div class="performance-fill" style="width: 98.9%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Rank 3 -->
+                    <div class="subject-card rank-3">
+                        <div class="rank-badge bronze">🥉</div>
+                        <div class="subject-info">
+                            <div class="subject-name">3rd Place: SOCIAL STUDIES</div>
+                            <div class="subject-stats">
+                                <div class="stat-item">
+                                    <span class="stat-label">Total Points</span>
+                                    <span class="stat-value">81</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Average</span>
+                                    <span class="stat-value">5.79</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Status</span>
+                                    <span class="status-badge status-excellent">VERY GOOD</span>
+                                </div>
+                            </div>
+                            <div class="performance-bar">
+                                <div class="performance-fill" style="width: 93.1%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Rank 4 -->
+                    <div class="subject-card">
+                        <div class="rank-badge" style="color: #667eea;">4</div>
+                        <div class="subject-info">
+                            <div class="subject-name">CHRISTIAN RELIGIOUS EDUCATION</div>
+                            <div class="subject-stats">
+                                <div class="stat-item">
+                                    <span class="stat-label">Total Points</span>
+                                    <span class="stat-value">77</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Average</span>
+                                    <span class="stat-value">5.50</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Status</span>
+                                    <span class="status-badge status-good">GOOD</span>
+                                </div>
+                            </div>
+                            <div class="performance-bar">
+                                <div class="performance-fill" style="width: 88.5%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Rank 5 (Tie) -->
+                    <div class="subject-card">
+                        <div class="rank-badge" style="color: #667eea;">5</div>
+                        <div class="subject-info">
+                            <div class="subject-name">ENGLISH</div>
+                            <div class="subject-stats">
+                                <div class="stat-item">
+                                    <span class="stat-label">Total Points</span>
+                                    <span class="stat-value">76</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Average</span>
+                                    <span class="stat-value">5.43</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Status</span>
+                                    <span class="status-badge status-good">GOOD</span>
+                                </div>
+                            </div>
+                            <div class="performance-bar">
+                                <div class="performance-fill" style="width: 87.4%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Rank 5 (Tie) -->
+                    <div class="subject-card">
+                        <div class="rank-badge" style="color: #667eea;">5</div>
+                        <div class="subject-info">
+                            <div class="subject-name">CREATIVE ARTS & SPORTS</div>
+                            <div class="subject-stats">
+                                <div class="stat-item">
+                                    <span class="stat-label">Total Points</span>
+                                    <span class="stat-value">76</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Average</span>
+                                    <span class="stat-value">5.43</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Status</span>
+                                    <span class="status-badge status-good">GOOD</span>
+                                </div>
+                            </div>
+                            <div class="performance-bar">
+                                <div class="performance-fill" style="width: 87.4%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Rank 7 -->
+                    <div class="subject-card">
+                        <div class="rank-badge" style="color: #667eea;">7</div>
+                        <div class="subject-info">
+                            <div class="subject-name">KISWAHILI</div>
+                            <div class="subject-stats">
+                                <div class="stat-item">
+                                    <span class="stat-label">Total Points</span>
+                                    <span class="stat-value">75</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Average</span>
+                                    <span class="stat-value">5.36</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Status</span>
+                                    <span class="status-badge status-good">GOOD</span>
+                                </div>
+                            </div>
+                            <div class="performance-bar">
+                                <div class="performance-fill" style="width: 86.2%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Rank 8 -->
+                    <div class="subject-card">
+                        <div class="rank-badge" style="color: #ffa500;">8</div>
+                        <div class="subject-info">
+                            <div class="subject-name">PRE-TECHNICAL STUDIES</div>
+                            <div class="subject-stats">
+                                <div class="stat-item">
+                                    <span class="stat-label">Total Points</span>
+                                    <span class="stat-value">71</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Average</span>
+                                    <span class="stat-value">5.07</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Status</span>
+                                    <span class="status-badge status-fair">FAIR</span>
+                                </div>
+                            </div>
+                            <div class="performance-bar">
+                                <div class="performance-fill" style="width: 81.6%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Rank 9 -->
+                    <div class="subject-card needs-attention">
+                        <div class="rank-badge" style="color: #ff6b6b;">9</div>
+                        <div class="subject-info">
+                            <div class="subject-name">MATHEMATICS ⚠️</div>
+                            <div class="subject-stats">
+                                <div class="stat-item">
+                                    <span class="stat-label">Total Points</span>
+                                    <span class="stat-value">67</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Average</span>
+                                    <span class="stat-value">4.79</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Status</span>
+                                    <span class="status-badge status-attention">NEEDS ATTENTION</span>
+                                </div>
+                            </div>
+                            <div class="performance-bar">
+                                <div class="performance-fill" style="width: 77%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Bar Chart Section -->
+            <div class="section">
+                <div class="section-title">
+                    📈 Comparative Performance Chart
+                </div>
+                
+                <div class="chart-section">
+                    <div class="bar-chart">
+                        <div class="chart-bar">
+                            <div class="chart-label">Agriculture</div>
+                            <div class="chart-bar-container">
+                                <div class="chart-bar-fill" style="width: 100%;">87</div>
+                            </div>
+                        </div>
+                        
+                        <div class="chart-bar">
+                            <div class="chart-label">Integrated Science</div>
+                            <div class="chart-bar-container">
+                                <div class="chart-bar-fill" style="width: 98.9%;">86</div>
+                            </div>
+                        </div>
+                        
+                        <div class="chart-bar">
+                            <div class="chart-label">Social Studies</div>
+                            <div class="chart-bar-container">
+                                <div class="chart-bar-fill" style="width: 93.1%;">81</div>
+                            </div>
+                        </div>
+                        
+                        <div class="chart-bar">
+                            <div class="chart-label">Christian Religious Education</div>
+                            <div class="chart-bar-container">
+                                <div class="chart-bar-fill" style="width: 88.5%;">77</div>
+                            </div>
+                        </div>
+                        
+                        <div class="chart-bar">
+                            <div class="chart-label">English</div>
+                            <div class="chart-bar-container">
+                                <div class="chart-bar-fill" style="width: 87.4%;">76</div>
+                            </div>
+                        </div>
+                        
+                        <div class="chart-bar">
+                            <div class="chart-label">Creative Arts & Sports</div>
+                            <div class="chart-bar-container">
+                                <div class="chart-bar-fill" style="width: 87.4%;">76</div>
+                            </div>
+                        </div>
+                        
+                        <div class="chart-bar">
+                            <div class="chart-label">Kiswahili</div>
+                            <div class="chart-bar-container">
+                                <div class="chart-bar-fill" style="width: 86.2%;">75</div>
+                            </div>
+                        </div>
+                        
+                        <div class="chart-bar">
+                            <div class="chart-label">Pre-technical Studies</div>
+                            <div class="chart-bar-container">
+                                <div class="chart-bar-fill" style="width: 81.6%;">71</div>
+                            </div>
+                        </div>
+                        
+                        <div class="chart-bar">
+                            <div class="chart-label">Mathematics</div>
+                            <div class="chart-bar-container">
+                                <div class="chart-bar-fill" style="width: 77%; background: linear-gradient(90deg, #ff6b6b 0%, #ee5a6f 100%);">67</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Key Insights -->
+            <div class="section">
+                <div class="section-title">
+                    💡 Key Insights & Recommendations
+                </div>
+                
+                <div class="insights-grid">
+                    <div class="insight-card" style="border-top-color: #28a745;">
+                        <h3>🎯 Top Performers</h3>
+                        <ul>
+                            <li><strong>Agriculture:</strong> 6 students scored EE2 (7 points)</li>
+                            <li><strong>Integrated Science:</strong> 7 students scored EE2</li>
+                            <li><strong>Gap:</strong> Only 1 point between 1st and 2nd</li>
+                            <li><strong>Action:</strong> Share best practices schoolwide</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="insight-card" style="border-top-color: #ffc107;">
+                        <h3>⚠️ Areas of Concern</h3>
+                        <ul>
+                            <li><strong>Mathematics:</strong> 20 points behind Agriculture</li>
+                            <li><strong>5 students</strong> scored below expectation</li>
+                            <li><strong>Only 2 students</strong> achieved EE2</li>
+                            <li><strong>Action:</strong> Immediate intervention needed</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="insight-card" style="border-top-color: #17a2b8;">
+                        <h3>📊 Balanced Performance</h3>
+                        <ul>
+                            <li><strong>7 out of 9 subjects</strong> average above 5.0</li>
+                            <li><strong>Humanities cluster:</strong> 75-77 points range</li>
+                            <li><strong>Consistency:</strong> Shows quality teaching</li>
+                            <li><strong>Action:</strong> Maintain current standards</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="insight-card" style="border-top-color: #dc3545;">
+                        <h3>🔧 Recommended Actions</h3>
+                        <ul>
+                            <li><strong>Mathematics:</strong> Implement remedial classes</li>
+                            <li><strong>Pre-technical:</strong> Increase practical sessions</li>
+                            <li><strong>Peer tutoring:</strong> Top students help struggling ones</li>
+                            <li><strong>Teacher training:</strong> Focus on weak subjects</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); color: white; text-align: center; padding: 30px 20px; margin-top: 0;">
+            <p style="font-size: 1.2em; margin: 0;">Developed by <strong style="color: #FFD700;">@Joel Ndiba Mwaura</strong></p>
+            <p style="font-size: 1em; margin: 10px 0 0 0; opacity: 0.95;">WEBDEV | © 2025 All Rights Reserved</p>
+        </footer>
+    </div>
+</body>
+</html>
