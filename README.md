@@ -46,6 +46,7 @@ Neema Christian School is conveniently located at Elgon View, Old Nairobi Road, 
 
 📞 Contact Information
 For inquiries, admissions, or visits, please contact the school through the administration office or visit us physically at our campus.
+HEAD TEACHER: +254711141523 ACADEMIC TEACHER:+254728663873 BURSAR:+254718903461
 
 📝 Admissions
 Admissions are open to learners who meet the school’s entry requirements. Parents are encouraged to visit the school for guidance on enrollment procedures.
